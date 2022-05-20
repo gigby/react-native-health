@@ -482,6 +482,189 @@
     [self.healthStore executeQuery:query];
 }
 
+- (void)deleteAnchoredWorkouts:(HKSampleType *)type
+                    predicate:(NSPredicate *)predicate
+                       anchor:(HKQueryAnchor *)anchor
+                        limit:(NSUInteger)lim
+                   completion:(void (^)(NSDictionary *, NSError *))completion {
+
+    // declare the block
+    void (^handlerBlock)(HKAnchoredObjectQuery *query, NSArray<__kindof HKSample *> *sampleObjects, NSArray<HKDeletedObject *> *deletedObjects, HKQueryAnchor *newAnchor, NSError *error);
+
+    // create and assign the block
+    handlerBlock = ^(HKAnchoredObjectQuery *query, NSArray<__kindof HKSample *> *sampleObjects, NSArray<HKDeletedObject *> *deletedObjects, HKQueryAnchor *newAnchor, NSError *error) {
+
+        if (!sampleObjects) {
+            if (completion) {
+                completion(nil, error);
+            }
+            return;
+        }
+
+        if (completion) {
+            NSMutableArray *data = [NSMutableArray arrayWithCapacity:1];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                for (HKWorkout *sample in sampleObjects) {
+                    @try {
+                        double energy =  [[sample totalEnergyBurned] doubleValueForUnit:[HKUnit kilocalorieUnit]];
+                        double distance = [[sample totalDistance] doubleValueForUnit:[HKUnit mileUnit]];
+                        NSString *type = [RCTAppleHealthKit stringForHKWorkoutActivityType:[sample workoutActivityType]];
+
+                        NSString *startDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.startDate];
+                        NSString *endDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.endDate];
+
+                        bool isTracked = true;
+                        if ([[sample metadata][HKMetadataKeyWasUserEntered] intValue] == 1) {
+                            isTracked = false;
+                        }
+
+                        NSString* device = @"";
+                        if (@available(iOS 11.0, *)) {
+                            device = [[sample sourceRevision] productType];
+                        } else {
+                            device = [[sample device] name];
+                            if (!device) {
+                                device = @"iPhone";
+                            }
+                        }
+                        
+                        NSDictionary *meta = [sample metadata];
+                        if (meta == nil) {
+                            meta = [NSDictionary new];
+                        }
+
+                        NSDictionary *elem = @{
+                                               @"activityId" : [NSNumber numberWithInt:[sample workoutActivityType]],
+                                               @"id" : [[sample UUID] UUIDString],
+                                               @"activityName" : type,
+                                               @"calories" : @(energy),
+                                               @"tracked" : @(isTracked),
+                                               @"metadata" : meta,
+                                               @"sourceName" : [[[sample sourceRevision] source] name],
+                                               @"sourceId" : [[[sample sourceRevision] source] bundleIdentifier],
+                                               @"device": device,
+                                               @"distance" : @(distance),
+                                               @"start" : startDateString,
+                                               @"end" : endDateString
+                                               };
+
+                        [self.healthStore deleteObject:sample withCompletion:^(BOOL success, NSError * _Nullable error) {
+
+                            if (error) {
+                                NSLog(@"[HealthKit] An error happened when deleting object - %@", error.localizedDescription);
+                                return;
+                            }
+                            
+                            [data addObject:elem];
+                        }];
+                    } @catch (NSException *exception) {
+                        NSLog(@"RNHealth: An error occured while trying to remove workout sample from: %@ ", [[[sample sourceRevision] source] bundleIdentifier]);
+                    }
+                }
+
+                NSData *anchorData = [NSKeyedArchiver archivedDataWithRootObject:newAnchor];
+                NSString *anchorString = [anchorData base64EncodedStringWithOptions:0];
+                completion(@{
+                            @"anchor": anchorString,
+                            @"data": data,
+                        }, error);
+            });
+        }
+    };
+
+    HKAnchoredObjectQuery *query = [[HKAnchoredObjectQuery alloc] initWithType:type
+                                                                     predicate:predicate
+                                                                        anchor:anchor
+                                                                         limit:lim
+                                                                resultsHandler:handlerBlock];
+
+    [self.healthStore executeQuery:query];
+}
+
+- (void)deleteSleepCategorySamplesForPredicate:(NSPredicate *)predicate
+                                        limit:(NSUInteger)lim
+                                    ascending:(BOOL)asc
+                                   completion:(void (^)(NSArray *, NSError *))completion {
+
+    NSSortDescriptor *timeSortDescriptor = [[NSSortDescriptor alloc] initWithKey:HKSampleSortIdentifierEndDate
+                                                                       ascending:asc];
+
+
+    // declare the block
+    void (^handlerBlock)(HKSampleQuery *query, NSArray *results, NSError *error);
+    // create and assign the block
+    handlerBlock = ^(HKSampleQuery *query, NSArray *results, NSError *error) {
+        if (!results) {
+            if (completion) {
+                completion(nil, error);
+            }
+            return;
+        }
+
+        if (completion) {
+            NSMutableArray *data = [NSMutableArray arrayWithCapacity:1];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+                for (HKCategorySample *sample in results) {
+                    NSInteger val = sample.value;
+
+                    NSString *startDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.startDate];
+                    NSString *endDateString = [RCTAppleHealthKit buildISO8601StringFromDate:sample.endDate];
+
+                    NSString *valueString;
+
+                    switch (val) {
+                      case HKCategoryValueSleepAnalysisInBed:
+                        valueString = @"INBED";
+                      break;
+                      case HKCategoryValueSleepAnalysisAsleep:
+                        valueString = @"ASLEEP";
+                      break;
+                     default:
+                        valueString = @"UNKNOWN";
+                     break;
+                  }
+
+                    NSDictionary *elem = @{
+                            @"id" : [[sample UUID] UUIDString],
+                            @"value" : valueString,
+                            @"startDate" : startDateString,
+                            @"endDate" : endDateString,
+                            @"sourceName" : [[[sample sourceRevision] source] name],
+                            @"sourceId" : [[[sample sourceRevision] source] bundleIdentifier],
+                    };
+                    
+                    [self.healthStore deleteObject:sample withCompletion:^(BOOL success, NSError * _Nullable error) {
+                        
+                        if (error) {
+                            NSLog(@"[HealthKit] An error happened when deleting sleep item - %@", error.localizedDescription);
+
+                            return;
+                        }
+                        
+                        [data addObject:elem];
+                    }];
+                }
+
+                completion(data, error);
+            });
+        }
+    };
+
+    HKCategoryType *categoryType =
+    [HKObjectType categoryTypeForIdentifier:HKCategoryTypeIdentifierSleepAnalysis];
+
+    HKSampleQuery *query = [[HKSampleQuery alloc] initWithSampleType:categoryType
+                                                          predicate:predicate
+                                                              limit:lim
+                                                    sortDescriptors:@[timeSortDescriptor]
+                                                     resultsHandler:handlerBlock];
+
+    [self.healthStore executeQuery:query];
+}
+
 - (void)fetchCorrelationSamplesOfType:(HKQuantityType *)quantityType
                                  unit:(HKUnit *)unit
                             predicate:(NSPredicate *)predicate

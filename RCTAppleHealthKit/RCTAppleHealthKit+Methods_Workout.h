@@ -12,5 +12,6 @@
 
 - (void)workout_getAnchoredQuery:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 - (void)workout_save: (NSDictionary *)input callback: (RCTResponseSenderBlock)callback;
+- (void)workout_delete:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 
 @end

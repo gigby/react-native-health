@@ -69,4 +69,28 @@
 
 }
 
+- (void)sleep_save: (NSDictionary *)input callback: (RCTResponseSenderBlock)callback {
+    NSDate *startDate = [RCTAppleHealthKit dateFromOptions:input key:@"startDate" withDefault:nil];
+    NSDate *endDate = [RCTAppleHealthKit dateFromOptions:input key:@"endDate" withDefault:nil];
+    
+    HKCategorySample *sleepSample = [
+        HKCategorySample categorySampleWithType: [HKCategoryType categoryTypeForIdentifier:HKCategoryTypeIdentifierSleepAnalysis] value:HKCategoryValueSleepAnalysisAsleep startDate:startDate
+                                    endDate:endDate
+                                ];
+
+    void (^completion)(BOOL success, NSError *error);
+
+    completion = ^(BOOL success, NSError *error){
+        if (!success) {
+            NSLog(@"An error occured saving the sleep %@. The error was: %@.", sleepSample, error);
+            callback(@[RCTMakeError(@"An error occured saving the sleep", error, nil)]);
+
+            return;
+        }
+        callback(@[[NSNull null], [[sleepSample UUID] UUIDString]]);
+    };
+
+    [self.healthStore saveObject:sleepSample withCompletion:completion];
+}
+
 @end

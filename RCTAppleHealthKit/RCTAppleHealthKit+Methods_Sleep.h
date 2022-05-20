@@ -12,5 +12,6 @@
 
 - (void)sleep_getSleepSamples:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 - (void)sleep_delete:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
+- (void)sleep_save: (NSDictionary *)input callback: (RCTResponseSenderBlock)callback;
 
 @end

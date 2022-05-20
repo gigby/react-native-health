@@ -142,6 +142,16 @@ declare module 'react-native-health' {
       callback: (err: HKErrorResponse, results: AnchoredQueryResults) => void,
     ): void
 
+    deleteAnchoredWorkouts(
+      options: HealthInputOptions,
+      callback: (err: HKErrorResponse, results: AnchoredQueryResults) => void,
+    ): void
+
+    deleteSleepSamples(
+      options: HealthInputOptions,
+      callback: (err: string, results: Array<HKSleepQueriedSampleType>) => void,
+    ): void
+
     getDailyStepCountSamples(
       options: HealthInputOptions,
       callback: (err: string, results: Array<HealthValue>) => void,
@@ -314,7 +324,7 @@ declare module 'react-native-health' {
 
     getSleepSamples(
       options: HealthInputOptions,
-      callback: (err: string, results: Array<HealthValue>) => void,
+      callback: (err: string, results: Array<HKSleepQueriedSampleType>) => void,
     ): void
 
     getInfo(
@@ -481,6 +491,15 @@ declare module 'react-native-health' {
     distance: number
     start: string
     end: string
+  }
+
+  export interface HKSleepQueriedSampleType {
+    id: string,
+    sourceId: string,
+    sourceName: string,
+    startDate: string,
+    endDate: string,
+    value: 'INBED' | 'ASLEEP',
   }
 
   export interface ElectrocardiogramSampleValue extends BaseValue {

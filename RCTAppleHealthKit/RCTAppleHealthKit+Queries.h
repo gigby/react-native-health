@@ -49,6 +49,17 @@
                         limit:(NSUInteger)lim
                    completion:(void (^)(NSDictionary *, NSError *))completion;
 
+- (void)deleteAnchoredWorkouts:(HKSampleType *)type
+                    predicate:(NSPredicate *)predicate
+                       anchor:(HKQueryAnchor *)anchor
+                        limit:(NSUInteger)lim
+                   completion:(void (^)(NSDictionary *, NSError *))completion;
+
+- (void)deleteSleepCategorySamplesForPredicate:(NSPredicate *)predicate
+                                   limit:(NSUInteger)lim
+                                   ascending:(BOOL)asc
+                                   completion:(void (^)(NSArray *, NSError *))completion;
+
 - (void)fetchQuantitySamplesOfType:(HKQuantityType *)quantityType
                               unit:(HKUnit *)unit
                          predicate:(NSPredicate *)predicate

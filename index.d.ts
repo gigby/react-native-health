@@ -152,6 +152,11 @@ declare module 'react-native-health' {
       callback: (err: string, results: Array<HKSleepQueriedSampleType>) => void,
     ): void
 
+    saveSleepSample(
+      options: HealthActivityOptions,
+      callback: (error: string, result: HealthValue) => void,
+    ): void
+
     getDailyStepCountSamples(
       options: HealthInputOptions,
       callback: (err: string, results: Array<HealthValue>) => void,

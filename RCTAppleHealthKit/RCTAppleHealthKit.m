@@ -231,6 +231,12 @@ RCT_EXPORT_METHOD(deleteSleepSamples:(NSDictionary *)input callback:(RCTResponse
     [self sleep_delete:input callback:callback];
 }
 
+RCT_EXPORT_METHOD(saveSleepSample:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback)
+{
+    [self _initializeHealthStore];
+    [self sleep_save:input callback:callback];
+}
+
 RCT_EXPORT_METHOD(setObserver:(NSDictionary *)input)
 {
     [self _initializeHealthStore];

@@ -148,12 +148,12 @@ declare module 'react-native-health' {
     ): void
 
     deleteSleepSamples(
-      options: HealthInputOptions,
+      options: { startDate: string, endDate: string },
       callback: (err: string, results: Array<HKSleepQueriedSampleType>) => void,
     ): void
 
     saveSleepSample(
-      options: HealthActivityOptions,
+      options: { startDate: string, endDate: string },
       callback: (error: string, result: HealthValue) => void,
     ): void
 
@@ -354,7 +354,7 @@ declare module 'react-native-health' {
 
     saveWorkout(
       options: HealthActivityOptions,
-      callback: (error: string, result: HealthValue) => void,
+      callback: (error: Error, result: string) => void,
     ): void
 
     getAuthStatus(

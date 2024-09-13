@@ -18,7 +18,7 @@
     HKQuantityType *weightType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass];
 
     HKUnit *unit = [RCTAppleHealthKit hkUnitFromOptions:input key:@"unit" withDefault:[HKUnit poundUnit]];
-    
+
     [self fetchMostRecentQuantitySampleOfType:weightType
                                     predicate:nil
                                    completion:^(HKQuantity *mostRecentQuantity, NSDate *startDate, NSDate *endDate, NSError *error) {
@@ -166,6 +166,25 @@
             return;
         }
         callback(@[[NSNull null], @(bmi)]);
+    }];
+}
+
+// experimental
+- (void)body_saveHeadacheSymptom:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback
+{
+    NSDate *startDate = [RCTAppleHealthKit dateFromOptions:input key:@"startDate" withDefault:[NSDate date]];
+    NSDate *endDate = [RCTAppleHealthKit dateFromOptions:input key:@"endDate" withDefault:[NSDate date]];
+    NSUInteger severity = [RCTAppleHealthKit uintFromOptions:input key:@"value" withDefault: HKCategoryValueSeverityModerate];
+
+    HKCategoryType *headacheType = [HKCategoryType categoryTypeForIdentifier:HKCategoryTypeIdentifierHeadache];
+    HKCategorySample *headacheSample = [HKCategorySample categorySampleWithType:headacheType value:severity startDate:startDate endDate:endDate];
+
+    [self.healthStore saveObject:headacheSample withCompletion:^(BOOL success, NSError *error) {
+        if (!success) {
+            callback(@[RCTJSErrorFromNSError(error)]);
+            return;
+        }
+        callback(@[[NSNull null], @(severity)]);
     }];
 }
 
@@ -361,7 +380,7 @@
 - (void)body_getBodyFatPercentageSamples:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback
 {
     HKQuantityType *bodyFatPercentType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyFatPercentage];
-    
+
     HKUnit *unit = [HKUnit percentUnit];
     NSUInteger limit = [RCTAppleHealthKit uintFromOptions:input key:@"limit" withDefault:HKObjectQueryNoLimit];
     BOOL ascending = [RCTAppleHealthKit boolFromOptions:input key:@"ascending" withDefault:false];
@@ -372,7 +391,7 @@
         return;
     }
     NSPredicate * predicate = [RCTAppleHealthKit predicateForSamplesBetweenDates:startDate endDate:endDate];
-    
+
     [self fetchQuantitySamplesOfType:bodyFatPercentType
                                 unit:unit
                            predicate:predicate
@@ -396,13 +415,13 @@
     double percentage = [RCTAppleHealthKit doubleValueFromOptions:input];
     NSDate *sampleDate = [RCTAppleHealthKit dateFromOptionsDefaultNow:input];
     HKUnit *unit = [HKUnit percentUnit];
-    
+
     percentage = percentage / 100;
 
     HKQuantity *bodyFatPercentQuantity = [HKQuantity quantityWithUnit:unit doubleValue:percentage];
     HKQuantityType *bodyFatPercentType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyFatPercentage];
     HKQuantitySample *bodyFatPercentSample = [HKQuantitySample quantitySampleWithType:bodyFatPercentType quantity:bodyFatPercentQuantity startDate:sampleDate endDate:sampleDate];
-    
+
     [self.healthStore saveObject:bodyFatPercentSample withCompletion:^(BOOL success, NSError *error) {
         if (!success) {
             NSLog(@"error saving body fat percent sample: %@", error);
@@ -464,7 +483,7 @@
 - (void)body_getLeanBodyMassSamples:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback
 {
     HKQuantityType *leanBodyMassType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierLeanBodyMass];
-    
+
     HKUnit *unit = [RCTAppleHealthKit hkUnitFromOptions:input key:@"unit" withDefault:[HKUnit poundUnit]];
     NSUInteger limit = [RCTAppleHealthKit uintFromOptions:input key:@"limit" withDefault:HKObjectQueryNoLimit];
     BOOL ascending = [RCTAppleHealthKit boolFromOptions:input key:@"ascending" withDefault:false];
@@ -475,7 +494,7 @@
         return;
     }
     NSPredicate * predicate = [RCTAppleHealthKit predicateForSamplesBetweenDates:startDate endDate:endDate];
-    
+
     [self fetchQuantitySamplesOfType:leanBodyMassType
                                 unit:unit
                            predicate:predicate
@@ -499,11 +518,11 @@
     double mass = [RCTAppleHealthKit doubleValueFromOptions:input];
     NSDate *sampleDate = [RCTAppleHealthKit dateFromOptions:input key:@"startDate" withDefault:[NSDate date]];
     HKUnit *unit = [RCTAppleHealthKit hkUnitFromOptions:input key:@"unit" withDefault:[HKUnit poundUnit]];
-    
+
     HKQuantity *massQuantity = [HKQuantity quantityWithUnit:unit doubleValue:mass];
     HKQuantityType *massType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierLeanBodyMass];
     HKQuantitySample *massSample = [HKQuantitySample quantitySampleWithType:massType quantity:massQuantity startDate:sampleDate endDate:sampleDate];
-    
+
     [self.healthStore saveObject:massSample withCompletion:^(BOOL success, NSError *error) {
         if (!success) {
             NSLog(@"error saving lean body mass sample: %@", error);

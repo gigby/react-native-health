@@ -18,6 +18,8 @@
 - (void)body_getBodyMassIndexSamples:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 - (void)body_saveBodyMassIndex:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 
+- (void)body_saveHeadacheSymptom:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
+
 - (void)body_getLatestHeight:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 - (void)body_getHeightSamples:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;
 - (void)body_saveHeight:(NSDictionary *)input callback:(RCTResponseSenderBlock)callback;

@@ -71,7 +71,7 @@ declare module 'react-native-health' {
       options: HealthValueOptions,
       callback: (error: string, result: HealthValue) => void,
     ): void
-    
+
     getLatestWaistCircumference(
       options: HealthUnitOptions,
       callback: (err: string, results: HealthValue) => void,
@@ -101,8 +101,13 @@ declare module 'react-native-health' {
       options: HealthInputOptions,
       callback: (err: string, results: Array<HealthValue>) => void,
     ): void
-  
+
     saveBmi(
+      options: HealthValueOptions,
+      callback: (error: string, result: HealthValue) => void,
+    ): void
+
+    saveHeadacheSymptom(
       options: HealthValueOptions,
       callback: (error: string, result: HealthValue) => void,
     ): void
@@ -416,7 +421,7 @@ declare module 'react-native-health' {
       options: HealthInputOptions,
       callback: (err: string, results: HealthValue[]) => void,
     ):void
-    
+
     getClinicalRecords(
       options: HealthClinicalRecordOptions,
       callback: (err: string, results: Array<HealthClinicalRecord>) => void,
@@ -733,6 +738,7 @@ declare module 'react-native-health' {
     NikeFuel = 'NikeFuel',
     RespiratoryRate = 'RespiratoryRate',
     SleepAnalysis = 'SleepAnalysis',
+    HeadacheSymptom = 'HeadacheSymptom',
     StepCount = 'StepCount',
     Steps = 'Steps',
     Vo2Max = 'Vo2Max',
@@ -811,7 +817,7 @@ declare module 'react-native-health' {
     InconclusivePoorReading = 'InconclusivePoorReading',
     InconclusiveOther = 'InconclusiveOther',
     Unrecognized = 'Unrecognized',
-  }  
+  }
 
   export enum BloodGlucoseMealTime {
     Preprandial = 1,

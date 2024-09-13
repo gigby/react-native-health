@@ -203,12 +203,12 @@
     if ([@"BloodAlcoholContent" isEqualToString: key]) {
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBloodAlcoholContent];
     }
-    
+
     // Activity Summary
     if ([@"ActivitySummary" isEqualToString:key]){
         return [HKObjectType activitySummaryType];
     }
-    
+
     // Clinical Records
     if ([@"AllergyRecord" isEqualToString:key]) {
         return [RCTAppleHealthKit clinicalTypeFromName:@"AllergyRecord"];
@@ -245,7 +245,9 @@
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyFatPercentage];
     } else if ([@"BodyMassIndex" isEqualToString:key]) {
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMassIndex];
-    } else if ([@"LeanBodyMass" isEqualToString:key]) {
+    } else if ([@"HeadacheSymptom" isEqualToString:key]) {
+        return [HKObjectType categoryTypeForIdentifier:HKCategoryTypeIdentifierHeadache];
+    }  else if ([@"LeanBodyMass" isEqualToString:key]) {
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierLeanBodyMass];
     } else if ([@"BodyTemperature" isEqualToString:key]) {
         return [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyTemperature];

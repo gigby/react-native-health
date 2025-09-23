@@ -1,5 +1,3 @@
-import { HealthInputOptions } from 'react-native-health'
-
 declare module 'react-native-health' {
   export interface HealthKitPermissions {
     permissions: {

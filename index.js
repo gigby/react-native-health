@@ -1,6 +1,7 @@
+import { Platform, NativeModules } from 'react-native';
 import { Activities, Observers, Permissions, Units } from './src/constants'
 
-const { AppleHealthKit } = require('react-native').NativeModules
+const { AppleHealthKit } = NativeModules;
 
 export const HealthKit = Platform.OS !== "ios" ? {} : {
   initHealthKit: AppleHealthKit.initHealthKit,

@@ -95,9 +95,11 @@ export const HealthKit = Platform.OS !== "ios" ? {} : {
   saveInsulinDeliverySample: AppleHealthKit.saveInsulinDeliverySample,
   deleteInsulinDeliverySample: AppleHealthKit.deleteInsulinDeliverySample,
 
-  // Bearable Methods
-  readBucketedQuantity: AppleHealthKit.readBucketedQuantity,
-  readBucketedSleep: AppleHealthKit.readBucketedSleep,
+  // Custom Methods
+  saveSleepSample: AppleHealthKit.saveSleepSample,
+  deleteSleepSamples: AppleHealthKit.deleteSleepSamples,
+  deleteAnchoredWorkouts: AppleHealthKit.deleteAnchoredWorkouts,
+  saveHeadacheSymptom: AppleHealthKit.saveHeadacheSymptom,
 
   Constants: {
     Activities,

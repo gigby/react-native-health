@@ -40,10 +40,20 @@
             return;
         }
 
+        // Guard against nil dates from HealthKit to prevent crash:
+        // "attempt to insert nil object from objects[1]"
+        // This can happen when HKStatistics returns nil startDate/endDate
+        NSString *startDateStr = startDate ? [RCTAppleHealthKit buildISO8601StringFromDate:startDate] : @"";
+        NSString *endDateStr = endDate ? [RCTAppleHealthKit buildISO8601StringFromDate:endDate] : @"";
+
+        // Additional safety: if buildISO8601StringFromDate returns nil, use empty string
+        if (!startDateStr) startDateStr = @"";
+        if (!endDateStr) endDateStr = @"";
+
          NSDictionary *response = @{
                  @"value" : @(value),
-                 @"startDate" : [RCTAppleHealthKit buildISO8601StringFromDate:startDate],
-                 @"endDate" : [RCTAppleHealthKit buildISO8601StringFromDate:endDate],
+                 @"startDate" : startDateStr,
+                 @"endDate" : endDateStr,
          };
 
         callback(@[[NSNull null], response]);
@@ -197,10 +207,16 @@
             return;
         }
 
+        // Guard against nil dates from HealthKit
+        NSString *startDateStr = startDate ? [RCTAppleHealthKit buildISO8601StringFromDate:startDate] : @"";
+        NSString *endDateStr = endDate ? [RCTAppleHealthKit buildISO8601StringFromDate:endDate] : @"";
+        if (!startDateStr) startDateStr = @"";
+        if (!endDateStr) endDateStr = @"";
+
         NSDictionary *response = @{
                 @"value" : @(distance),
-                @"startDate" : [RCTAppleHealthKit buildISO8601StringFromDate:startDate],
-                @"endDate" : [RCTAppleHealthKit buildISO8601StringFromDate:endDate],
+                @"startDate" : startDateStr,
+                @"endDate" : endDateStr,
         };
 
 
@@ -256,10 +272,16 @@
             return;
         }
 
+        // Guard against nil dates from HealthKit
+        NSString *startDateStr = startDate ? [RCTAppleHealthKit buildISO8601StringFromDate:startDate] : @"";
+        NSString *endDateStr = endDate ? [RCTAppleHealthKit buildISO8601StringFromDate:endDate] : @"";
+        if (!startDateStr) startDateStr = @"";
+        if (!endDateStr) endDateStr = @"";
+
         NSDictionary *response = @{
                 @"value" : @(distance),
-                @"startDate" : [RCTAppleHealthKit buildISO8601StringFromDate:startDate],
-                @"endDate" : [RCTAppleHealthKit buildISO8601StringFromDate:endDate],
+                @"startDate" : startDateStr,
+                @"endDate" : endDateStr,
         };
 
         callback(@[[NSNull null], response]);
@@ -313,10 +335,16 @@
             return;
         }
 
+        // Guard against nil dates from HealthKit
+        NSString *startDateStr = startDate ? [RCTAppleHealthKit buildISO8601StringFromDate:startDate] : @"";
+        NSString *endDateStr = endDate ? [RCTAppleHealthKit buildISO8601StringFromDate:endDate] : @"";
+        if (!startDateStr) startDateStr = @"";
+        if (!endDateStr) endDateStr = @"";
+
         NSDictionary *response = @{
                 @"value" : @(distance),
-                @"startDate" : [RCTAppleHealthKit buildISO8601StringFromDate:startDate],
-                @"endDate" : [RCTAppleHealthKit buildISO8601StringFromDate:endDate],
+                @"startDate" : startDateStr,
+                @"endDate" : endDateStr,
         };
 
         callback(@[[NSNull null], response]);
@@ -370,10 +398,16 @@
             return;
         }
 
+        // Guard against nil dates from HealthKit
+        NSString *startDateStr = startDate ? [RCTAppleHealthKit buildISO8601StringFromDate:startDate] : @"";
+        NSString *endDateStr = endDate ? [RCTAppleHealthKit buildISO8601StringFromDate:endDate] : @"";
+        if (!startDateStr) startDateStr = @"";
+        if (!endDateStr) endDateStr = @"";
+
         NSDictionary *response = @{
                 @"value" : @(count),
-                @"startDate" : [RCTAppleHealthKit buildISO8601StringFromDate:startDate],
-                @"endDate" : [RCTAppleHealthKit buildISO8601StringFromDate:endDate],
+                @"startDate" : startDateStr,
+                @"endDate" : endDateStr,
         };
 
         callback(@[[NSNull null], response]);
